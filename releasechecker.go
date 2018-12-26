@@ -25,6 +25,7 @@ func (c *Checker) Run(interval time.Duration, repositories []string, releases ch
 		c.releases = make(map[string]Repository)
 	}
 
+	isFirstSend := true
 	for {
 		for _, repoName := range repositories {
 			s := strings.Split(repoName, "/")
@@ -42,7 +43,9 @@ func (c *Checker) Run(interval time.Duration, repositories []string, releases ch
 			}
 
 			// For debugging uncomment this next line
-			//releases <- nextRepo
+			if isFirstSend {
+				releases <- nextRepo
+			}
 
 			currRepo, ok := c.releases[repoName]
 
@@ -64,6 +67,7 @@ func (c *Checker) Run(interval time.Duration, repositories []string, releases ch
 				)
 			}
 		}
+		isFirstSend = false
 		time.Sleep(interval)
 	}
 }
